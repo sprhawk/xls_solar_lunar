@@ -28,9 +28,14 @@ def process_workbook(workbook):
 
         value = s.cell(row, 2).value
         valstr = str(int(value))
-        y = int(valstr[:4])
-        m = int(valstr[4:6])
-        d = int(valstr[5:7])
+        y = valstr[:4]
+        m = valstr[4:6]
+        d = valstr[6:8]
+        #print(valstr)
+        #print(y, m, d)
+        y = int(y)
+        m = int(m)
+        d = int(d)
         try:
             lunar_date = LunarDate.fromSolarDate(y, m, d)
             sheet1.write(row, 3, u"{}-{}-{}".format(lunar_date.year, lunar_date.month, lunar_date.day))
@@ -41,12 +46,12 @@ def process_workbook(workbook):
                     sheet1.write(row, 4 + i, u"{}-{}-{}".format(d.year, d.month, d.day))
                 except Exception as e:
                     print(e)
-                    print(u"错误的日期:" + valstr)
+                    print(u"错误的日期(1):" + valstr)
                     print(lunar_date)
                     sheet1.write(row, 4 + i, u"错误")
         except Exception as e:
             print(e)
-            print(u"错误的日期:" + valstr)
+            print(u"错误的日期(2):" + valstr)
             sheet1.write(row, 3, u"错误的日期" + valstr)
 
     return out_book
