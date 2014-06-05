@@ -31,26 +31,36 @@ def process_workbook(workbook):
         y = int(valstr[:4])
         m = int(valstr[4:6])
         d = int(valstr[5:7])
-        lunar_date = LunarDate.fromSolarDate(y, m, d)
-        sheet1.write(row, 3, u"{}-{}-{}".format(lunar_date.year, lunar_date.month, lunar_date.day))
-        for i in range(5):
-            lunar_date.year = 2014 + i
-            try:
-                d = lunar_date.toSolarDate()
-                sheet1.write(row, 4 + i, u"{}-{}-{}".format(d.year, d.month, d.day))
-            except Exception as e:
-                print(e)
-                print(lunar_date)
-                sheet1.write(row, 4 + i, u"错误")
+        try:
+            lunar_date = LunarDate.fromSolarDate(y, m, d)
+            sheet1.write(row, 3, u"{}-{}-{}".format(lunar_date.year, lunar_date.month, lunar_date.day))
+            for i in range(5):
+                lunar_date.year = 2014 + i
+                try:
+                    d = lunar_date.toSolarDate()
+                    sheet1.write(row, 4 + i, u"{}-{}-{}".format(d.year, d.month, d.day))
+                except Exception as e:
+                    print(e)
+                    print(u"错误的日期:" + valstr)
+                    print(lunar_date)
+                    sheet1.write(row, 4 + i, u"错误")
+        except Exception as e:
+            print(e)
+            print(u"错误的日期:" + valstr)
+            sheet1.write(row, 3, u"错误的日期" + valstr)
 
     return out_book
 
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) < 3:
-        print("Usage: {} input.xls output.xls".format(sys.argv[0]))
+    if len(sys.argv) < 2:
+        print("Usage: {} input.xls [output.xls]".format(sys.argv[0]))
         sys.exit(1)
     workbook =  open_workbook(sys.argv[1], on_demand=True)
     book = process_workbook(workbook)
-    book.save(sys.argv[2])
+    if len(sys.argv) < 3:
+        output_name = sys.argv[1] + "_output.xls"
+    else:
+        output_name = sys.argv[2]
+    book.save(output_name)
